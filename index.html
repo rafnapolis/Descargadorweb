@@ -11,13 +11,12 @@
             --accent: #38bdf8;
             --text: #f8fafc;
             --secondary: #94a3b8;
-            --success: #10b981;
         }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -37,7 +36,7 @@
             border: 1px solid #334155;
         }
 
-        h1 { font-size: 1.8rem; margin-bottom: 5px; color: var(--accent); letter-spacing: -1px; }
+        h1 { font-size: 1.8rem; color: var(--accent); margin-bottom: 5px; }
         p { color: var(--secondary); font-size: 0.9rem; margin-bottom: 25px; }
 
         .input-box {
@@ -50,11 +49,8 @@
             margin-bottom: 15px;
             box-sizing: border-box;
             outline: none;
-            transition: 0.3s;
             font-size: 1rem;
         }
-
-        .input-box:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
 
         .btn-main {
             width: 100%;
@@ -64,26 +60,16 @@
             border: none;
             border-radius: 14px;
             font-weight: 800;
-            font-size: 1rem;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
-        }
-
-        .btn-main:disabled {
-            background: #475569;
-            cursor: not-allowed;
-            box-shadow: none;
-            opacity: 0.7;
+            font-size: 1rem;
         }
 
         #timer-box {
             margin-top: 20px;
             padding: 20px;
-            border-radius: 14px;
             background: rgba(56, 189, 248, 0.1);
+            border-radius: 14px;
             display: none;
-            border: 1px dashed var(--accent);
         }
 
         .countdown {
@@ -91,134 +77,87 @@
             font-weight: 900;
             color: var(--accent);
             display: block;
-            margin-top: 10px;
         }
 
-        #download-link {
+        .btn-final {
             display: none;
             margin-top: 20px;
             padding: 18px;
-            background: var(--success);
+            background: #10b981;
             color: white;
             text-decoration: none;
             border-radius: 14px;
             font-weight: bold;
-            font-size: 1.1rem;
             animation: pulse 1.5s infinite;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        .footer-info { margin-top: 25px; font-size: 0.75rem; color: #4b5563; }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h1>VideoDownloader</h1>
-    <p>YT • TikTok • Instagram • FB</p>
+    <p>TikTok • YouTube • Instagram</p>
 
-    <input type="url" id="urlInput" class="input-box" placeholder="Pega el enlace aquí..." required>
+    <input type="url" id="urlInput" class="input-box" placeholder="Pega el link aquí..." required>
     
     <button id="mainBtn" class="btn-main" onclick="startProcess()">GENERAR DESCARGA</button>
 
     <div id="timer-box">
-        <span id="status-text" style="font-weight: 600;">Verificando enlace seguro...</span>
+        <span id="status-text">Analizando enlace...</span>
         <span class="countdown" id="seconds">10</span>
     </div>
 
-    <a id="download-link" href="#" target="_blank">📥 ¡DESCARGAR AHORA!</a>
-    
-    <div class="footer-info">
-        Al procesar el video, aceptas nuestros términos.<br>
-        <b>Servicio Gratuito y Seguro.</b>
-    </div>
+    <a id="download-link" href="#" class="btn-final">📥 CLIC PARA DESCARGAR</a>
 </div>
 
 <script>
-    // --- CONFIGURACIÓN DE MONETIZACIÓN ---
-    const MONETAG_LINK = "TU_DIRECT_LINK_AQUI"; // REEMPLAZA ESTO
-    const WAIT_TIME = 10; 
+    // --- CONFIGURACIÓN ---
+    const MONETAG_LINK = "TU_DIRECT_LINK_AQUI"; 
 
     function startProcess() {
-        const urlInput = document.getElementById('urlInput');
-        const videoUrl = urlInput.value.trim();
+        const url = document.getElementById('urlInput').value.trim();
+        if (!url) return alert("Pega un link válido");
 
-        if (!videoUrl) {
-            alert("Por favor, pega un enlace válido.");
-            return;
-        }
-
-        // 1. ABRIR MONETAG (Direct Link)
+        // 1. ABRIR MONETAG
         window.open(MONETAG_LINK, '_blank');
 
-        // 2. UI - Bloquear entrada y mostrar contador
-        const btn = document.getElementById('mainBtn');
-        const timerBox = document.getElementById('timer-box');
-        const secondsEl = document.getElementById('seconds');
-        
-        btn.disabled = true;
-        urlInput.disabled = true;
-        timerBox.style.display = "block";
+        // 2. UI
+        document.getElementById('mainBtn').style.display = "none";
+        document.getElementById('timer-box').style.display = "block";
 
-        let timeLeft = WAIT_TIME;
-
-        // 3. CUENTA REGRESIVA
-        const timer = setInterval(async () => {
+        let timeLeft = 10;
+        const timer = setInterval(() => {
             timeLeft--;
-            secondsEl.textContent = timeLeft;
+            document.getElementById('seconds').textContent = timeLeft;
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                await fetchVideo(videoUrl);
+                generateSafeLink(url);
             }
         }, 1000);
     }
 
-    async function fetchVideo(videoUrl) {
-        const statusText = document.getElementById('status-text');
-        const secondsEl = document.getElementById('seconds');
-        const downloadLink = document.getElementById('download-link');
+    function generateSafeLink(videoUrl) {
+        document.getElementById('timer-box').style.display = "none";
+        const dl = document.getElementById('download-link');
+        
+        // Usamos un servicio de redirección de descarga directa (SSYoutube / SaveFrom)
+        // Esto es mucho más estable para navegadores móviles
+        let cleanUrl = videoUrl.replace("https://", "");
+        let finalPath = "https://ssyoutube.com/en/" + cleanUrl;
 
-        statusText.textContent = "Sincronizando con el servidor...";
-        secondsEl.style.display = "none";
-
-        try {
-            // API Robustecida
-            const response = await fetch("https://api.cobalt.tools/api/json", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Accept": "application/json" 
-                },
-                body: JSON.stringify({ 
-                    url: videoUrl,
-                    videoQuality: "720",
-                    filenameStyle: "basic"
-                })
-            });
-            
-            const data = await response.json();
-
-            // Verificamos múltiples formas de respuesta de la API
-            if (data.url || (data.picker && data.picker.length > 0)) {
-                const finalUrl = data.url || data.picker[0].url;
-                document.getElementById('timer-box').style.display = "none";
-                downloadLink.href = finalUrl;
-                downloadLink.style.display = "block";
-                statusText.textContent = "¡Enlace generado!";
-            } else {
-                throw new Error("No link");
-            }
-        } catch (e) {
-            alert("El servidor está saturado. Por favor, intenta de nuevo o prueba con otro video.");
-            location.reload(); // Recarga para limpiar errores
+        // Si es TikTok, usamos un procesador alternativo
+        if(videoUrl.includes("tiktok")){
+            finalPath = "https://snaptik.app/abc?url=" + encodeURIComponent(videoUrl);
         }
+
+        dl.href = finalPath;
+        dl.style.display = "block";
+        
+        // Alerta opcional para guiar al usuario
+        alert("¡Enlace generado! Serás redirigido al servidor de descarga.");
     }
 </script>
 
