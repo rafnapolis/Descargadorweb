@@ -3,161 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📥 VideoDownloader Pro | HD</title>
+    <title>📥 Descargador Pro</title>
     <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --secondary: #94a3b8;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--card);
-            width: 100%;
-            max-width: 420px;
-            padding: 2.5rem 1.5rem;
-            border-radius: 24px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-        }
-
-        h1 { font-size: 1.8rem; color: var(--accent); margin-bottom: 5px; }
-        p { color: var(--secondary); font-size: 0.9rem; margin-bottom: 25px; }
-
-        .input-box {
-            width: 100%;
-            padding: 16px;
-            background: #0f172a;
-            border: 2px solid #334155;
-            border-radius: 14px;
-            color: white;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            outline: none;
-            font-size: 1rem;
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 16px;
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
-            border-radius: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        #timer-box {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(56, 189, 248, 0.1);
-            border-radius: 14px;
-            display: none;
-        }
-
-        .countdown {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--accent);
-            display: block;
-        }
-
-        .btn-final {
-            display: none;
-            margin-top: 20px;
-            padding: 18px;
-            background: #10b981;
-            color: white;
-            text-decoration: none;
-            border-radius: 14px;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: var(--card); width: 100%; max-width: 400px; padding: 2rem; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--accent); font-size: 1.5rem; }
+        input { width: 100%; padding: 15px; background: #0f172a; border: 2px solid #334155; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #timer-box { display: none; margin-top: 20px; padding: 15px; background: rgba(56, 189, 248, 0.1); border-radius: 10px; }
+        .countdown { font-size: 2rem; font-weight: bold; color: var(--accent); }
+        .btn-final { display: none; margin-top: 20px; padding: 15px; background: #10b981; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h1>VideoDownloader</h1>
-    <p>TikTok • YouTube • Instagram</p>
-
-    <input type="url" id="urlInput" class="input-box" placeholder="Pega el link aquí..." required>
-    
-    <button id="mainBtn" class="btn-main" onclick="startProcess()">GENERAR DESCARGA</button>
+    <p>YouTube • TikTok • Instagram</p>
+    <input type="url" id="urlInput" placeholder="Pega el link aquí...">
+    <button id="mainBtn" onclick="startProcess()">GENERAR DESCARGA</button>
 
     <div id="timer-box">
-        <span id="status-text">Analizando enlace...</span>
-        <span class="countdown" id="seconds">10</span>
+        <span id="msg">Preparando enlace...</span>
+        <div class="countdown" id="seconds">10</div>
     </div>
 
-    <a id="download-link" href="#" class="btn-final">📥 CLIC PARA DESCARGAR</a>
+    <a id="downloadLink" href="#" target="_blank" class="btn-final" style="display: none;">📥 CLIC PARA DESCARGAR</a>
 </div>
 
 <script>
-    // --- CONFIGURACIÓN ---
-    const MONETAG_LINK = "TU_DIRECT_LINK_AQUI"; 
+    // COLOCA TU LINK DE MONETAG AQUÍ
+    const MONETAG = "TU_DIRECT_LINK_AQUI"; 
 
     function startProcess() {
-        const url = document.getElementById('urlInput').value.trim();
-        if (!url) return alert("Pega un link válido");
+        const rawUrl = document.getElementById('urlInput').value.trim();
+        if (!rawUrl) return alert("Pega un link");
 
         // 1. ABRIR MONETAG
-        window.open(MONETAG_LINK, '_blank');
+        window.open(MONETAG, '_blank');
 
         // 2. UI
         document.getElementById('mainBtn').style.display = "none";
         document.getElementById('timer-box').style.display = "block";
 
         let timeLeft = 10;
-        const timer = setInterval(() => {
+        const interval = setInterval(() => {
             timeLeft--;
             document.getElementById('seconds').textContent = timeLeft;
-
             if (timeLeft <= 0) {
-                clearInterval(timer);
-                generateSafeLink(url);
+                clearInterval(interval);
+                finish(rawUrl);
             }
         }, 1000);
     }
 
-    function generateSafeLink(videoUrl) {
+    function finish(url) {
         document.getElementById('timer-box').style.display = "none";
-        const dl = document.getElementById('download-link');
+        const linkBtn = document.getElementById('downloadLink');
         
-        // Usamos un servicio de redirección de descarga directa (SSYoutube / SaveFrom)
-        // Esto es mucho más estable para navegadores móviles
-        let cleanUrl = videoUrl.replace("https://", "");
-        let finalPath = "https://ssyoutube.com/en/" + cleanUrl;
-
-        // Si es TikTok, usamos un procesador alternativo
-        if(videoUrl.includes("tiktok")){
-            finalPath = "https://snaptik.app/abc?url=" + encodeURIComponent(videoUrl);
-        }
-
-        dl.href = finalPath;
-        dl.style.display = "block";
+        // Esta es la forma más compatible de crear el link de descarga
+        const finalUrl = "https://savefrom.net/?url=" + encodeURIComponent(url);
         
-        // Alerta opcional para guiar al usuario
-        alert("¡Enlace generado! Serás redirigido al servidor de descarga.");
+        linkBtn.href = finalUrl;
+        linkBtn.style.display = "block";
+        
+        alert("¡Listo! Haz clic en el botón verde para ir a la descarga.");
     }
 </script>
 
