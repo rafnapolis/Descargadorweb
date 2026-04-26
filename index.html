@@ -3,29 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📥 VideoDownloader Pro | Sin Marca de Agua</title>
+    <title>📥 VideoDownloader Pro | HD</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f8fafc; --secondary: #94a3b8; --kofi: #29abe0; }
         * { box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
         
-        .card { background: var(--card); width: 100%; max-width: 400px; padding: 2rem; border-radius: 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .card { background: var(--card); width: 100%; max-width: 400px; padding: 2.5rem 2rem; border-radius: 28px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 1px solid #334155; }
         
-        h1 { color: var(--accent); font-size: 1.6rem; margin-bottom: 5px; }
-        .subtitle { color: var(--secondary); font-size: 0.9rem; margin-bottom: 25px; }
+        h1 { color: var(--accent); font-size: 1.8rem; margin-bottom: 5px; letter-spacing: -0.5px; }
+        .subtitle { color: var(--secondary); font-size: 0.95rem; margin-bottom: 30px; }
         
-        input { width: 100%; padding: 16px; background: #0f172a; border: 2px solid #334155; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; font-size: 1rem; width: 100%; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        input { width: 100%; padding: 18px; background: #0f172a; border: 2px solid #334155; border-radius: 16px; color: white; outline: none; font-size: 1rem; transition: 0.3s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
         
-        button { width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #0f172a; font-size: 1rem; }
+        .btn-generate { width: 100%; padding: 18px; background: var(--accent); border: none; border-radius: 16px; font-weight: 800; cursor: pointer; color: #0f172a; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
 
-        #timer-box { display: none; margin-top: 20px; padding: 20px; background: rgba(56, 189, 248, 0.1); border-radius: 15px; border: 1px dashed var(--accent); }
-        .countdown { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+        #processing-area { display: none; margin-top: 25px; padding: 20px; background: rgba(56, 189, 248, 0.05); border-radius: 20px; border: 1px dashed var(--accent); }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; margin: 0 auto 15px; animation: spin 1s linear infinite; }
         
-        .btn-final { display: none; margin-top: 20px; padding: 18px; background: #10b981; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; text-align: center; }
-        
-        .kofi-btn { margin-top: 25px; display: inline-flex; align-items: center; background: var(--kofi); color: white; text-decoration: none; padding: 10px 20px; border-radius: 50px; font-size: 0.85rem; }
-        .kofi-btn img { width: 20px; margin-right: 8px; }
+        /* Contenedor donde aparecerá el botón oficial de SaveFrom */
+        #sf-result { margin-top: 25px; display: none; min-height: 50px; }
+
+        .kofi-link { margin-top: 30px; display: inline-flex; align-items: center; background: var(--kofi); color: white; text-decoration: none; padding: 12px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
+        .kofi-link:hover { opacity: 0.9; transform: scale(1.05); }
+        .kofi-link img { width: 22px; margin-right: 10px; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.03);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
@@ -34,52 +42,58 @@
     <h1>VideoDownloader</h1>
     <p class="subtitle">TikTok Sin Marca de Agua • HD</p>
     
-    <input type="url" id="urlInput" placeholder="Pega el link de TikTok aquí...">
-    <button id="mainBtn" onclick="startProcess()">QUITAR MARCA DE AGUA</button>
+    <div class="input-group">
+        <input type="url" id="videoUrl" placeholder="Pega el link aquí..." autocomplete="off">
+    </div>
+    
+    <button id="mainBtn" class="btn-generate" onclick="processVideo()">Generar Descarga</button>
 
-    <div id="timer-box">
-        <span id="status">Limpiando video...</span>
-        <div class="countdown" id="seconds">5</div>
+    <div id="processing-area">
+        <div class="spinner"></div>
+        <span id="status-text" style="font-weight: 600; color: var(--accent);">Analizando video...</span>
     </div>
 
-    <a id="downloadLink" href="#" target="_blank" class="btn-final">📥 OBTENER VIDEO LIMPIO</a>
+    <div id="sf-result"></div>
 
-    <br>
-    <a href="https://ko-fi.com/TU_USUARIO" target="_blank" class="kofi-btn">
+    <a href="https://ko-fi.com/TU_USUARIO" target="_blank" class="kofi-link">
         <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi">
-        Invítame un café
+        Apoyar proyecto
     </a>
 </div>
 
-<script>
-    function startProcess() {
-        const url = document.getElementById('urlInput').value.trim();
-        if (!url) return alert("Pega un link de TikTok");
+<script type="text/javascript">
+    function processVideo() {
+        const url = document.getElementById('videoUrl').value.trim();
+        if(!url) return alert("Por favor, pega un enlace válido.");
 
-        // UI
-        document.getElementById('mainBtn').style.display = "none";
-        document.getElementById('timer-box').style.display = "block";
+        // UI: Ocultar botón y mostrar carga
+        document.getElementById('mainBtn').style.display = 'none';
+        document.getElementById('processing-area').style.display = 'block';
 
-        let timeLeft = 5;
-        const interval = setInterval(() => {
-            timeLeft--;
-            document.getElementById('seconds').textContent = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                
-                // MÉTODO EFECTIVO: Redirección al motor de SnapTik
-                // Esto procesa el video y quita la marca de agua garantizado.
-                const finalUrl = "https://snaptik.app/abc?url=" + encodeURIComponent(url);
-                
-                document.getElementById('timer-box').style.display = "none";
-                const btn = document.getElementById('downloadLink');
-                btn.href = finalUrl;
-                btn.style.display = "block";
-                
-                alert("¡Video procesado! Haz clic en el botón para descargar.");
-            }
-        }, 1000);
+        // Simular procesamiento de 3 segundos
+        setTimeout(() => {
+            document.getElementById('processing-area').style.display = 'none';
+            const resultArea = document.getElementById('sf-result');
+            resultArea.style.display = 'block';
+            
+            // Inyectamos el link de descarga usando el motor de SaveFrom
+            // Esto abrirá el panel de descarga optimizado de ellos
+            window.location.href = "https://savefrom.net/?url=" + encodeURIComponent(url);
+            
+            // Si prefieres que el usuario vea un botón de descarga en tu web 
+            // antes de irse, podemos activarlo aquí.
+        }, 3000);
     }
+
+    // Código del Helper Agent de tu captura para mejorar la detección
+    (function(w, d, s, p) {
+        w.sfButton = w.sfButton || function(){};
+        var c = d.getElementsByTagName(s)[0];
+        var a = d.createElement(s);
+        a.async = 1;
+        a.src = p;
+        c.parentNode.insertBefore(a, c);
+    })(window, document, 'script', '//savefrom.net/js/sf-helper-agent.min.js');
 </script>
 
 </body>
