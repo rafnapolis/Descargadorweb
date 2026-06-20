@@ -12,20 +12,20 @@
         
         .card { background: var(--card); width: 100%; max-width: 420px; padding: 2.5rem 2rem; border-radius: 28px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 1px solid #334155; }
         
-        h1 { color: var(--accent); font-size: 1.8rem; margin-bottom: 5px; letter-spacing: -0.5px; }
+        h1 { color: var(--accent); font-size: 1.8rem; margin-bottom: 5px; }
         .subtitle { color: var(--secondary); font-size: 0.95rem; margin-bottom: 30px; }
         
         .input-group { margin-bottom: 20px; }
-        input { width: 100%; padding: 18px; background: #0f172a; border: 2px solid #334155; border-radius: 16px; color: white; outline: none; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
+        input { width: 100%; padding: 18px; background: #0f172a; border: 2px solid #334155; border-radius: 16px; color: white; outline: none; font-size: 1rem; }
+        input:focus { border-color: var(--accent); }
         
-        .btn-generate { width: 100%; padding: 18px; background: var(--accent); border: none; border-radius: 16px; font-weight: 800; cursor: pointer; color: #0f172a; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .btn-generate { width: 100%; padding: 18px; background: var(--accent); border: none; border-radius: 16px; font-weight: 800; cursor: pointer; color: #0f172a; font-size: 1rem; text-transform: uppercase; transition: 0.3s; }
         .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
 
         #processing-area { display: none; margin-top: 25px; padding: 20px; background: rgba(56, 189, 248, 0.05); border-radius: 20px; border: 1px dashed var(--accent); }
         .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; margin: 0 auto 15px; animation: spin 1s linear infinite; }
         
-        .kofi-link { margin-top: 30px; display: inline-flex; align-items: center; background: var(--kofi); color: white; text-decoration: none; padding: 12px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; transition: 0.3s; box-shadow: 0 4px 12px rgba(41, 171, 224, 0.3); }
+        .kofi-link { margin-top: 30px; display: inline-flex; align-items: center; background: var(--kofi); color: white; text-decoration: none; padding: 12px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
         .kofi-link:hover { transform: scale(1.05); background: #2496c5; }
         .kofi-link img { width: 22px; margin-right: 10px; }
 
@@ -46,17 +46,38 @@
 
     <div id="processing-area">
         <div class="spinner"></div>
-        <span id="status-text" style="font-weight: 600; color: var(--accent);">Procesando con SaveFrom...</span>
+        <span id="status-text" style="font-weight: 600; color: var(--accent);">Preparando descarga...</span>
     </div>
 
     <br>
     <a href="https://ko-fi.com/metodorelacional" target="_blank" class="kofi-link">
         <img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi">
-        Invítame un café
+        Apoyar proyecto
     </a>
 </div>
 
 <script type="text/javascript">
+    // Variable con tu Direct Link
+    const DIRECT_LINK = "https://omg10.com/4/9616941";
+
+    function processVideo() {
+        const url = document.getElementById('videoUrl').value.trim();
+        if(!url) return alert("Por favor, pega un enlace válido.");
+
+        // 1. Abrimos el Direct Link de Monetag en una ventana nueva
+        window.open(DIRECT_LINK, '_blank');
+
+        // 2. Mostramos la interfaz de procesamiento
+        document.getElementById('mainBtn').style.display = 'none';
+        document.getElementById('processing-area').style.display = 'block';
+
+        // 3. Esperamos 2.5 segundos antes de redirigir a SaveFrom
+        setTimeout(() => {
+            window.location.href = "https://savefrom.net/?url=" + encodeURIComponent(url);
+        }, 2500);
+    }
+
+    // Código del Helper Agent de SaveFrom
     (function(w, d, s, p) {
         w.sfButton = w.sfButton || function(){};
         var c = d.getElementsByTagName(s)[0];
@@ -65,32 +86,6 @@
         a.src = p;
         c.parentNode.insertBefore(a, c);
     })(window, document, 'script', '//savefrom.net/js/sf-helper-agent.min.js');
-
-    // Configuración visual del botón según la captura
-    sfButton.text = 'Download';
-    sfButton.styles = {
-        color: 'rgba(0,0,0,0.7)',
-        textShadow: '1px 1px 1px rgba(255,255,255,0.4)',
-        fontFamily: 'Arial,Helvetica,sans-serif',
-        fontSize: '12px',
-        borderRadius: '4px',
-        backgroundColor: '#81c200',
-        backgroundImage: 'linear-gradient(#9cd600, #69ae00)',
-        border: 'none'
-    };
-
-    function processVideo() {
-        const url = document.getElementById('videoUrl').value.trim();
-        if(!url) return alert("Por favor, pega un enlace válido.");
-
-        document.getElementById('mainBtn').style.display = 'none';
-        document.getElementById('processing-area').style.display = 'block';
-
-        // Redirección al motor oficial de descarga
-        setTimeout(() => {
-            window.location.href = "https://savefrom.net/?url=" + encodeURIComponent(url);
-        }, 2500);
-    }
 </script>
 
 </body>
